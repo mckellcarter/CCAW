@@ -22,7 +22,8 @@ X = CCAW.BaseData(x_image_pname, x_mask_pname)
 Y = CCAW.BaseData(y_image_pname, y_mask_pname)	
 X_mat = np.column_stack([X.image_data_masked, Y.image_data_masked])
 
-threshold = 0
+threshold = -9.023
+print 'Threshold', threshold
 
 kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(X_mat)
 
@@ -41,11 +42,10 @@ x_image2_pname = 'x_img_novel_test.nii.gz'
 x_mask2_pname =  x_image2_pname  #self masked
 y_image2_pname = 'y_img_novel_test.nii.gz' 
 y_mask2_pname =  y_image2_pname
-X2 = CCAW.BaseData(x_image1_pname, x_mask2_pname)
-Y2 = CCAW.BaseData(y_image1_pname, y_mask2_pname)	
+X2 = CCAW.BaseData(x_image2_pname, x_mask2_pname)
+Y2 = CCAW.BaseData(y_image2_pname, y_mask2_pname)	
 X2_mat = X2.image_data_masked
 Y2_mat = Y2.image_data_masked
-
 
 
 X_test = []
@@ -56,22 +56,19 @@ X_novel_plot =[]
 Y_novel_plot = []
 roc_true = []
 roc_score = []
+roc_obtained =[]
 
 i = 0
-for i in range(0,100000,1):
+for i in range(0,1000,1):
 	index = r.randint(0,len(X1_mat)-1)
 	X_test.append(X1_mat[index])
 	Y_test.append(Y1_mat[index])
-	X_clean_plot.append(X1_mat[index])
-	Y_clean_plot.append(Y1_mat[index])
 	roc_true.append(0)
 j = 0
-for j in range(0,100000,1):
+for j in range(0,1000,1):
 	index = r.randint(0,len(X2_mat)-1)
 	X_test.append(X2_mat[index])
 	Y_test.append(Y2_mat[index])
-	X_novel_plot.append(X2_mat[index])
-	Y_novel_plot.append(Y2_mat[index])
 	roc_true.append(1)
 
 test_mat = np.column_stack([X_test, Y_test])
@@ -79,10 +76,15 @@ test_mat = np.column_stack([X_test, Y_test])
 
 for item in test_mat:
 	temp = kde.score_samples(item)[0]
-	if temp > threshold :
+	roc_obtained.append(float(math.exp(temp)))
+	if temp < threshold :
 		roc_score.append(1)
+		X_novel_plot.append(item[0])
+		Y_novel_plot.append(item[1])
 	else:
 		roc_score.append(0)
+		X_clean_plot.append(item[0])
+		Y_clean_plot.append(item[1])
 
 print 'ROC Score: ', roc_auc_score(roc_true,roc_score)
 

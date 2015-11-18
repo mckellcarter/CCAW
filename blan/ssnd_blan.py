@@ -22,9 +22,9 @@ X_mat = np.column_stack([X.image_data_masked, Y.image_data_masked])
 
 kde1 = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(X_mat)
 
-x_image1_pname = 'x_img_mixed.nii.gz'
+x_image1_pname = 'x_img_mix.nii.gz'
 x_mask1_pname =  x_image1_pname  #self masked
-y_image1_pname = 'y_img_mixed.nii.gz' 
+y_image1_pname = 'y_img_mix.nii.gz' 
 y_mask1_pname =  y_image1_pname
 X1 = CCAW.BaseData(x_image1_pname, x_mask1_pname)
 Y1 = CCAW.BaseData(y_image1_pname, y_mask1_pname)	
@@ -46,12 +46,13 @@ x_image2_pname = 'x_img_novel_test.nii.gz'
 x_mask2_pname =  x_image2_pname  #self masked
 y_image2_pname = 'y_img_novel_test.nii.gz' 
 y_mask2_pname =  y_image2_pname
-X2 = CCAW.BaseData(x_image1_pname, x_mask2_pname)
-Y2 = CCAW.BaseData(y_image1_pname, y_mask2_pname)	
+X2 = CCAW.BaseData(x_image2_pname, x_mask2_pname)
+Y2 = CCAW.BaseData(y_image2_pname, y_mask2_pname)	
 X2_mat = X2.image_data_masked
 Y2_mat = Y2.image_data_masked
 
-threshold = 0
+threshold = 4.08005667024
+print 'Threshold', threshold
 
 X_test = []
 Y_test = []
@@ -63,32 +64,43 @@ roc_true = []
 roc_score = []
 
 i = 0
-for i in range(0,100000,1):
+for i in range(0,1000,1):
 	index = r.randint(0,len(X1_mat)-1)
 	X_test.append(X1_mat[index])
 	Y_test.append(Y1_mat[index])
-	X_clean_plot.append(X1_mat[index])
-	Y_clean_plot.append(Y1_mat[index])
 	roc_true.append(0)
+
 j = 0
-for j in range(0,100000,1):
+for j in range(0,1000,1):
 	index = r.randint(0,len(X2_mat)-1)
 	X_test.append(X2_mat[index])
 	Y_test.append(Y2_mat[index])
-	X_novel_plot.append(X2_mat[index])
-	Y_novel_plot.append(Y2_mat[index])
 	roc_true.append(1)
 
 test_mat = np.column_stack([X_test, Y_test])
 
+count = 0
+i =0 
 for item in test_mat:
 	temp1 = kde2.score_samples(item)[0]
 	temp2 = kde1.score_samples(item)[0]
-	temp = float(temp1 / temp2)
-	if temp > threshold :
+	temp = float(temp1) - float(temp2)
+	#print temp, roc_true[i]
+	if temp > threshold:
+		if roc_true[i] == 0:
+			count = count + 1
+			print count, '1:', roc_true[i], temp
 		roc_score.append(1)
+		X_novel_plot.append(item[0])
+		Y_novel_plot.append(item[1])
 	else:
+		if roc_true[i] == 1:
+			count = count + 1
+			print count, '0:', roc_true[i], temp 
 		roc_score.append(0)
+		X_clean_plot.append(item[0])
+		Y_clean_plot.append(item[1])
+	i += 1
 
 print 'ROC Score: ', roc_auc_score(roc_true,roc_score)
 
