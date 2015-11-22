@@ -11,6 +11,13 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
 from sklearn.neighbors.kde import KernelDensity
 
+threshold = 0
+try:
+	threshold = float(sys.argv[1])
+except IndexError:
+	threshold = 4.08005667024
+print 'Threshold', threshold
+
 #Collecting the training data
 x_image_pname = 'x_img_clean_train.nii.gz'
 x_mask_pname =  x_image_pname  #self masked
@@ -22,9 +29,9 @@ X_mat = np.column_stack([X.image_data_masked, Y.image_data_masked])
 
 kde1 = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(X_mat)
 
-x_image1_pname = 'x_img_mix.nii.gz'
+x_image1_pname = 'x_img_mixed.nii.gz'
 x_mask1_pname =  x_image1_pname  #self masked
-y_image1_pname = 'y_img_mix.nii.gz' 
+y_image1_pname = 'y_img_mixed.nii.gz' 
 y_mask1_pname =  y_image1_pname
 X1 = CCAW.BaseData(x_image1_pname, x_mask1_pname)
 Y1 = CCAW.BaseData(y_image1_pname, y_mask1_pname)	
@@ -42,17 +49,15 @@ Y1 = CCAW.BaseData(y_image1_pname, y_mask1_pname)
 X1_mat = X1.image_data_masked
 Y1_mat = Y1.image_data_masked
 
-x_image2_pname = 'x_img_novel_test.nii.gz'
+x_image2_pname = 'x_img_novel.nii.gz'
 x_mask2_pname =  x_image2_pname  #self masked
-y_image2_pname = 'y_img_novel_test.nii.gz' 
+y_image2_pname = 'y_img_novel.nii.gz' 
 y_mask2_pname =  y_image2_pname
 X2 = CCAW.BaseData(x_image2_pname, x_mask2_pname)
 Y2 = CCAW.BaseData(y_image2_pname, y_mask2_pname)	
 X2_mat = X2.image_data_masked
 Y2_mat = Y2.image_data_masked
 
-threshold = 4.08005667024
-print 'Threshold', threshold
 
 X_test = []
 Y_test = []
