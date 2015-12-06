@@ -15,7 +15,7 @@ threshold = 0
 try:
 	threshold = float(sys.argv[1])
 except IndexError:
-	threshold = 4.08005667024
+	threshold = 20.7090978186
 print 'Threshold', threshold
 
 #Collecting the training data
@@ -69,14 +69,14 @@ roc_true = []
 roc_score = []
 
 i = 0
-for i in range(0,1000,1):
+for i in range(0,100000,1):
 	index = r.randint(0,len(X1_mat)-1)
 	X_test.append(X1_mat[index])
 	Y_test.append(Y1_mat[index])
 	roc_true.append(0)
 
 j = 0
-for j in range(0,1000,1):
+for j in range(0,100000,1):
 	index = r.randint(0,len(X2_mat)-1)
 	X_test.append(X2_mat[index])
 	Y_test.append(Y2_mat[index])

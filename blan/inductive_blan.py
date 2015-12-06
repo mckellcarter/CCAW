@@ -15,7 +15,7 @@ threshold = 0
 try:
 	threshold = float(sys.argv[1])
 except IndexError:
-	threshold = -9.023
+	threshold = 6.07099938798e-13
 print 'Threshold', threshold
 
 #Collecting the training data
@@ -60,16 +60,14 @@ X_novel_plot =[]
 Y_novel_plot = []
 roc_true = []
 roc_score = []
-roc_obtained =[]
-
 i = 0
-for i in range(0,1000,1):
+for i in range(0,100000,1):
 	index = np.random.randint(0,len(X1_mat)-1)
 	X_test.append(X1_mat[index])
 	Y_test.append(Y1_mat[index])
 	roc_true.append(0)
 j = 0
-for j in range(0,1000,1):
+for j in range(0,100000,1):
 	index = np.random.randint(0,len(X2_mat)-1)
 	X_test.append(X2_mat[index])
 	Y_test.append(Y2_mat[index])
@@ -81,7 +79,7 @@ count = 0
 i= 0
 for item in test_mat:
 	temp = kde.score_samples(item)[0]
-	roc_obtained.append(float(math.exp(temp)))
+	temp = float(math.exp(temp))
 	if temp < threshold :
 		if roc_true[i] == 0:
 			count = count + 1
